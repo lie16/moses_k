@@ -9,15 +9,15 @@ part 'all_pokemon_state.dart';
 
 class AllPokemonCubit extends Cubit<AllPokemonState> {
   AllPokemonCubit({required this.client}) : super(AllPokemonInitial());
-  final ArtemisClient client; 
+  final ArtemisClient client;
 
   int page = 1;
   List<AllPokemons$Query$PokemonList$PokemonItem?>? oldData;
   List<AllPokemons$Query$PokemonList$PokemonItem?>? newData;
-  
+
   AllPokemons allPokemon = AllPokemons();
 
-  void fetchAllPokemon({required int limit, required int offset}){
+  void fetchAllPokemon({required int limit, required int offset}) {
     if (state is AllPokemonLoading) return;
 
     final currentState = state;
@@ -32,16 +32,17 @@ class AllPokemonCubit extends Cubit<AllPokemonState> {
         isFirstFetch: page == 1,
       ),
     );
-    allPokemon.fetchAllPokemons(client: client, limit:limit, offset:offset).then((value) {
+    allPokemon
+        .fetchAllPokemons(client: client, limit: limit, offset: offset)
+        .then((value) {
       page++;
       newData = (state as AllPokemonLoading).pokeData;
-      if(value.pokemons?.results == null){
+      if (value.pokemons?.results == null) {
         emit(AllPokemonEndOfFile());
       } else {
         newData?.addAll(value.pokemons!.results!);
         emit(AllPokemonLoaded(pokeData: newData));
       }
-      
     });
   }
 }
