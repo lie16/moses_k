@@ -13,6 +13,9 @@ dependencies:
   gql: ^0.14.0
   go_router: ^6.0.7
   flutter_bloc: ^8.1.2
+  firebase_auth: ^4.2.6
+  firebase_core: ^2.5.0
+  google_sign_in: ^5.4.4
 
 dev_dependencies:
   flutter_test:
