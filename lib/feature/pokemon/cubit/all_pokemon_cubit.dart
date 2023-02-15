@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:artemis/artemis.dart';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
@@ -12,8 +14,8 @@ class AllPokemonCubit extends Cubit<AllPokemonState> {
   final ArtemisClient client;
 
   int offset = 1;
-  List<AllPokemons$Query$PokemonList$PokemonItem?>? oldData;
-  List<AllPokemons$Query$PokemonList$PokemonItem?>? newData;
+  List<AllPokemons$Query$PokemonList$PokemonItem?> oldData = [];
+  List<AllPokemons$Query$PokemonList$PokemonItem?> newData = [];
 
   AllPokemons allPokemon = AllPokemons();
 
@@ -40,7 +42,9 @@ class AllPokemonCubit extends Cubit<AllPokemonState> {
       if (value.pokemons?.results == null) {
         emit(AllPokemonEndOfFile());
       } else {
-        newData?.addAll(value.pokemons!.results!);
+        List<AllPokemons$Query$PokemonList$PokemonItem?> a =
+            value.pokemons!.results ?? [];
+        newData.addAll(a);
         emit(AllPokemonLoaded(newPokeData: newData));
       }
     });

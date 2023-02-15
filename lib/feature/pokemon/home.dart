@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moses_k/feature/pokemon/cubit/all_pokemon_cubit.dart';
@@ -16,11 +14,12 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final _scrollController = ScrollController();
+  int limit = 20;
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_dismissOnScreenKeyboard);
-    BlocProvider.of<AllPokemonCubit>(context).fetchAllPokemon(limit: 10);
+    BlocProvider.of<AllPokemonCubit>(context).fetchAllPokemon(limit: limit);
   }
 
   @override
@@ -31,40 +30,50 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AllPokemonCubit, AllPokemonState>(
-      builder: (context, state) {
-        List<AllPokemons$Query$PokemonList$PokemonItem?> data = [];
-        bool isLoading = false;
+    return Scaffold(
+      body: BlocBuilder<AllPokemonCubit, AllPokemonState>(
+        builder: (context, state) {
+          List<AllPokemons$Query$PokemonList$PokemonItem?> data = [];
+          bool isLoading = false;
 
-        if (state is AllPokemonLoading && state.isFirstFetch) {
-          return const CircularProgressIndicator();
-        }
-        if (state is AllPokemonLoading && state.isFirstFetch == false) {
-          data = state.oldPokeData ?? [];
-          isLoading = true;
-        } else if (state is AllPokemonLoaded) {
-          data = state.newPokeData ?? [];
-        }
-        return ListView.builder(
-          controller: _scrollController,
-          scrollDirection: Axis.vertical,
-          itemCount: data.length + (isLoading ? 1 : 0),
-          itemBuilder: (context, index) {
-            if (index < data.length) {
-              return Text(data[index]?.name ?? '');
-            } else {
-              return const BottomLoader();
-            }
-          },
-        );
-      },
+          if (state is AllPokemonLoading && state.isFirstFetch) {
+            return const CircularProgressIndicator();
+          }
+          if (state is AllPokemonLoading && state.isFirstFetch == false) {
+            data = state.oldPokeData;
+            isLoading = true;
+          } else if (state is AllPokemonLoaded) {
+            data = state.newPokeData;
+          }
+          return ListView.builder(
+            controller: _scrollController,
+            scrollDirection: Axis.vertical,
+            itemCount: data.length + (isLoading ? 1 : 0),
+            itemBuilder: (context, index) {
+              if (index < data.length) {
+                return Row(
+                  children: [
+                    Image.network(
+                      data[index]!.image!,
+                      // width: 50,
+                      // height: 50,
+                    ),
+                    Text(data[index]?.name ?? ''),
+                  ],
+                );
+              } else {
+                return const BottomLoader();
+              }
+            },
+          );
+        },
+      ),
     );
   }
 
   void _dismissOnScreenKeyboard() {
     if (_isBottom) {
-      log('bawah');
-      BlocProvider.of<AllPokemonCubit>(context).fetchAllPokemon(limit: 10);
+      BlocProvider.of<AllPokemonCubit>(context).fetchAllPokemon(limit: limit);
     }
   }
 
