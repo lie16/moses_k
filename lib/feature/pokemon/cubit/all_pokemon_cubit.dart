@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:artemis/artemis.dart';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';

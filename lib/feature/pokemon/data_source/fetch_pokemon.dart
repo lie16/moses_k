@@ -7,11 +7,11 @@ class FetchPokemon {
 
   FetchPokemon._internal();
 
-  factory FetchPokemon(){
+  factory FetchPokemon() {
     return _instance;
   }
 
-  Future<FetchPokemon$Query> fetchArtemisClient(
+  Future<FetchPokemon$Query> fetchDetailPokemon(
       {required ArtemisClient client, required String name}) async {
     final pokemonsQuery = FetchPokemonQuery(
         variables: FetchPokemonArguments(

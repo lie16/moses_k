@@ -7,6 +7,8 @@ class AllPokemonInitial extends AllPokemonState {}
 
 class AllPokemonEndOfFile extends AllPokemonState {}
 
+class AllPokemonError extends AllPokemonState {}
+
 class AllPokemonLoading extends AllPokemonState {
   final List<AllPokemons$Query$PokemonList$PokemonItem?> oldPokeData;
   final bool isFirstFetch;

@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:moses_k/feature/pokemon/pokemon_view.dart';
 
 import '../feature/pokemon/home.dart';
 
@@ -26,7 +27,17 @@ final router = GoRouter(
       name: AppRoute.home.name,
       pageBuilder: (context, state) => NoTransitionPage<void>(
         key: state.pageKey,
-        child: Home(),
+        child: const Home(),
+      ),
+    ),
+    GoRoute(
+      path: '/pokemon',
+      name: AppRoute.pokeDetail.name,
+      pageBuilder: (context, state) => NoTransitionPage<void>(
+        key: state.pageKey,
+        child: PokemonView(
+          pokemonName: state.queryParams['name'] ?? '',
+        ),
       ),
     ),
   ],

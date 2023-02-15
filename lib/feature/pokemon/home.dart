@@ -1,8 +1,12 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:moses_k/feature/pokemon/cubit/all_pokemon_cubit.dart';
 
 import '../../graphql_api/graphql_api.dart';
+import '../../router/app_router.dart';
 import '../../shared/widget/bottom_loader.dart';
 
 class Home extends StatefulWidget {
@@ -37,7 +41,7 @@ class _HomeState extends State<Home> {
           bool isLoading = false;
 
           if (state is AllPokemonLoading && state.isFirstFetch) {
-            return const CircularProgressIndicator();
+            return const Center(child: CircularProgressIndicator());
           }
           if (state is AllPokemonLoading && state.isFirstFetch == false) {
             data = state.oldPokeData;
@@ -51,15 +55,26 @@ class _HomeState extends State<Home> {
             itemCount: data.length + (isLoading ? 1 : 0),
             itemBuilder: (context, index) {
               if (index < data.length) {
-                return Row(
-                  children: [
-                    Image.network(
-                      data[index]!.image!,
-                      // width: 50,
-                      // height: 50,
-                    ),
-                    Text(data[index]?.name ?? ''),
-                  ],
+                return InkWell(
+                  onTap: () {
+                    log('${data[index]}');
+                    context.goNamed(
+                      AppRoute.pokeDetail.name,
+                      queryParams: <String, String>{
+                        'name': data[index]!.name ?? '',
+                      },
+                    );
+                  },
+                  child: Row(
+                    children: [
+                      Image.network(
+                        data[index]!.image!,
+                        // width: 50,
+                        // height: 50,
+                      ),
+                      Text(data[index]?.name ?? ''),
+                    ],
+                  ),
                 );
               } else {
                 return const BottomLoader();
