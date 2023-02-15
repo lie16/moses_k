@@ -11,7 +11,7 @@ class AllPokemons {
     return _instance;
   }
 
-  Future<AllPokemons$Query> fetchArtemisClient(
+  Future<AllPokemons$Query> fetchAllPokemons(
       {required ArtemisClient client, required int limit, required int offset}) async {
     final pokemonsQuery = AllPokemonsQuery(
         variables: AllPokemonsArguments(
