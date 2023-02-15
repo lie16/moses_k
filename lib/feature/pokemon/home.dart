@@ -1,4 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:moses_k/feature/pokemon/cubit/all_pokemon_cubit.dart';
+
+import '../../graphql_api/graphql_api.dart';
+import '../../shared/widget/bottom_loader.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -8,8 +15,63 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  final _scrollController = ScrollController();
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_dismissOnScreenKeyboard);
+    BlocProvider.of<AllPokemonCubit>(context).fetchAllPokemon(limit: 10);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _scrollController.removeListener(_dismissOnScreenKeyboard);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return BlocBuilder<AllPokemonCubit, AllPokemonState>(
+      builder: (context, state) {
+        List<AllPokemons$Query$PokemonList$PokemonItem?> data = [];
+        bool isLoading = false;
+
+        if (state is AllPokemonLoading && state.isFirstFetch) {
+          return const CircularProgressIndicator();
+        }
+        if (state is AllPokemonLoading && state.isFirstFetch == false) {
+          data = state.oldPokeData ?? [];
+          isLoading = true;
+        } else if (state is AllPokemonLoaded) {
+          data = state.newPokeData ?? [];
+        }
+        return ListView.builder(
+          controller: _scrollController,
+          scrollDirection: Axis.vertical,
+          itemCount: data.length + (isLoading ? 1 : 0),
+          itemBuilder: (context, index) {
+            if (index < data.length) {
+              return Text(data[index]?.name ?? '');
+            } else {
+              return const BottomLoader();
+            }
+          },
+        );
+      },
+    );
+  }
+
+  void _dismissOnScreenKeyboard() {
+    if (_isBottom) {
+      log('bawah');
+      BlocProvider.of<AllPokemonCubit>(context).fetchAllPokemon(limit: 10);
+    }
+  }
+
+  bool get _isBottom {
+    if (!_scrollController.hasClients) return false;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.offset;
+    return currentScroll >= (maxScroll * 0.9);
   }
 }
